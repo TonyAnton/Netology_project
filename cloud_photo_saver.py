@@ -1,11 +1,12 @@
 import json
-from pprint import pprint
 from datetime import datetime
-from vk_save import VK
-from yandex import DownloadToYandex
+from pprint import pprint
+import vk_save
+from vk_save import FromVK
+from yandex import ToYandex
 
 vk_id_input = input('Введите id или короткое имя пользователя: ')
-vk_user = VK(vk_id_input)
+vk_user = FromVK(vk_id_input)
 pprint(vk_user.get_albums())
 while True:
     vk_album_id = int(input('Введите id альбома из списка выше: '))
@@ -15,19 +16,22 @@ while True:
         print('Введен некорректный id альбома!')
 
 count_photo_in_album = vk_user.get_photo(vk_album_id, count_photo=5)["count"]
-pprint(count_photo_in_album)
+
 while True:
     count_choose = input(f'Хотите выбрать количество фото для выгрузки (по умолчанию 5) и не более '
-                         f'{count_photo_in_album}? да/нет: ').lower()
-    if count_choose == 'да':
+                         f'{count_photo_in_album}? Да/Нет: ').upper()
+    if count_choose == 'ДА':
         while True:
             count_photo = input('Введите количество: ')
-            if int(count_photo) <= count_photo_in_album:
-                break
+            if vk_save.isint(count_photo):
+                if int(count_photo) <= count_photo_in_album:
+                    break
+                else:
+                    print('Превышено количество фото или неверный ввод!')
             else:
-                print('Превышено количество фото или неверный ввод!')
+                print('Введите число!y')
         break
-    elif count_choose == 'нет':
+    elif count_choose == 'НЕТ':
         count_photo = 5
         break
     else:
@@ -56,5 +60,5 @@ with open('photo_data.json', 'w') as datafile:
     json.dump(json_list, datafile, indent=4)
 
 yandex_token = input('Введите токен для доступа к Яндекс.Диску: ')
-yandex_user = DownloadToYandex(yandex_token)
+yandex_user = ToYandex(yandex_token)
 yandex_user.upload_photo(likes_url_dict)

@@ -1,10 +1,8 @@
 import requests
 from progress.bar import IncrementalBar
-with open('yatoken.txt') as token:
-    ya_token = token.readline().strip()
 
 
-class DownloadToYandex:
+class ToYandex:
     def __init__(self, ya_token):
         self.ya_token = ya_token
         self.yandex_headers = {'Content-type': 'application/json', 'Authorization': f'OAuth {self.ya_token}'}

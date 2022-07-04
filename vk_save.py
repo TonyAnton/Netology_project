@@ -1,11 +1,18 @@
 import requests
 from pprint import pprint
-
 with open('VKtoken.txt') as vk:
     vk_token = vk.readline().strip()
+print(vk_token)
+
+def isint(id_str: str):
+    try:
+        int(id_str)
+        return True
+    except ValueError:
+        return False
 
 
-class VK:
+class FromVK:
     def __init__(self, vk_id):
         self.vk_query = 'https://api.vk.com/method'
         self.params = {
@@ -15,10 +22,13 @@ class VK:
         self.vk_id = self._get_id(vk_id)
 
     def _get_id(self, user_id: str):
-        get_id_param = {'user_ids': user_id}
-        query = f'{self.vk_query}/users.get'
-        user_id = requests.get(query, params=self.params | get_id_param).json()['response'][0]['id']
-        return user_id
+        if isint(user_id):
+            return int(user_id)
+        else:
+            get_id_param = {'user_ids': user_id}
+            query = f'{self.vk_query}/users.get'
+            user_id = requests.get(query, params=self.params | get_id_param).json()['response'][0]['id']
+            return user_id
 
     def get_albums(self):
         get_albums_params = {'owner_id': self.vk_id, 'need_system': 1}
